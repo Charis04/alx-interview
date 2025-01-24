@@ -8,24 +8,40 @@ make the total amount, return -1.
 
 def makeChange(coins, total):
     """
-    Determine the minimum number of coins needed to make a given amount of
-    change.
+    Determine the fewest number of coins needed to meet a given total.
     Args:
-        coins (list): A list of the values of the available coins.
-        total (int): The total amount of change needed.
+        coins (list): List of coin denominations.
+        total (int): Target total amount.
     Returns:
-        int: The minimum number of coins needed to make the change, or -1 if
-        it is not possible.
+        int: Fewest number of coins needed, or -1 if the total cannot be met.
     """
     if total <= 0:
         return 0
 
-    # Initialize the array to store the minimum coins needed for each amount
-    dp = [float('inf')] * (total + 1)
-    dp[0] = 0
+    # Sort coins in descending order to prioritize larger denominations
+    coins.sort(reverse=True)
+    memo = {}
 
-    for coin in coins:
-        for amount in range(coin, total + 1):
-            dp[amount] = min(dp[amount], dp[amount - coin] + 1)
+    def dfs(remaining):
+        # Base cases
+        if remaining == 0:
+            return 0
+        if remaining < 0:
+            return float('inf')
 
-    return dp[total] if dp[total] != float('inf') else -1
+        # Check memoization
+        if remaining in memo:
+            return memo[remaining]
+
+        # Explore options using each coin
+        min_coins = float('inf')
+        for coin in coins:
+            num_coins = 1 + dfs(remaining - coin)
+            min_coins = min(min_coins, num_coins)
+
+        # Store result in memo and return
+        memo[remaining] = min_coins
+        return min_coins
+
+    result = dfs(total)
+    return result if result != float('inf') else -1
