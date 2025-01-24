@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/python3
 """
 Given a list of coin denominations and a total amount, return the minimum
 number of coins needed to make the total amount. If it is not possible to
