@@ -3,6 +3,7 @@
 Determine the winner of each game.
 """
 
+
 def isWinner(x, nums):
     """
     Determine the winner of the prime number game.
