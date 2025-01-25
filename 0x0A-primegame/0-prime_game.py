@@ -5,53 +5,65 @@ Determine the winner of each game.
 
 def isWinner(x, nums):
     """
-    Determine the winner of each game.
+    Determine the winner of the prime number game.
 
-    :param x: int, number of rounds
-    :param nums: List[int], array of n values for each round
-    :return: str, name of the player with the most wins or None if it's a tie
+    Args:
+        x (int): Number of rounds.
+        nums (list of int): List of integers, where each integer represents
+                            n for that round.
+
+    Returns:
+        str: Name of the player that won the most rounds ('Maria' or 'Ben').
+             Return None if there's a tie.
     """
-    def sieve_of_eratosthenes(n):
-        """
-        Generate a list of primes up to n using the Sieve of Eratosthenes.
-        """
-        is_prime = [True] * (n + 1)
-        is_prime[0] = is_prime[1] = False
-        for i in range(2, int(n**0.5) + 1):
-            if is_prime[i]:
-                for multiple in range(i * i, n + 1, i):
-                    is_prime[multiple] = False
-        return [i for i in range(n + 1) if is_prime[i]]
+    if x <= 0 or not nums:
+        return None
 
-    def count_prime_moves(n):
-        """Count the number of prime moves possible for a given n."""
-        primes = sieve_of_eratosthenes(n)
-        moves = 0
-        marked = set()
-        for prime in primes:
-            if prime not in marked:
-                moves += 1
-                for multiple in range(prime, n + 1, prime):
-                    marked.add(multiple)
-        return moves
+    def sieve_of_eratosthenes(max_n):
+        """
+        Generate a list of primes up to max_n using the Sieve of Eratosthenes.
+
+        Args:
+            max_n (int): The upper limit to generate primes.
+
+        Returns:
+            list: A list where prime[i] is True if i is prime, False otherwise.
+        """
+        prime = [True] * (max_n + 1)
+        prime[0] = prime[1] = False  # 0 and 1 are not prime
+        for i in range(2, int(max_n**0.5) + 1):
+            if prime[i]:
+                for multiple in range(i * i, max_n + 1, i):
+                    prime[multiple] = False
+        return prime
+
+    max_n = max(nums)
+    prime = sieve_of_eratosthenes(max_n)
+
+    def count_primes_up_to(n):
+        """
+        Count the number of primes up to n.
+
+        Args:
+            n (int): The upper limit.
+
+        Returns:
+            int: The count of primes up to n.
+        """
+        return sum(prime[:n + 1])
 
     maria_wins = 0
     ben_wins = 0
 
     for n in nums:
-        if n < 2:
-            ben_wins += 1  # No primes, Ben wins by default
-            continue
-
-        moves = count_prime_moves(n)
-        if moves % 2 == 0:
-            ben_wins += 1  # Ben wins if moves are even
-        else:
-            maria_wins += 1  # Maria wins if moves are odd
+        prime_count = count_primes_up_to(n)
+        if prime_count % 2 == 1:  # Maria wins if the count of primes is odd
+            maria_wins += 1
+        else:  # Ben wins if the count of primes is even
+            ben_wins += 1
 
     if maria_wins > ben_wins:
         return "Maria"
     elif ben_wins > maria_wins:
         return "Ben"
-    else:
-        return None
+    return None
